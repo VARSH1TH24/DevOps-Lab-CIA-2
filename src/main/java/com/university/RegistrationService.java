@@ -1,8 +1,9 @@
+
 package com.university;
 
 public class RegistrationService {
 
-    private static final int MAX_CREDITS = 20;
+    private static final int MAX_CREDITS = 24;
 
     public boolean register(Student student, Course course) {
 
@@ -10,6 +11,7 @@ public class RegistrationService {
             return false;
         }
 
+        // Reject registration when the course is already full.
         if (course.getCurrentEnrollment() >= course.getCapacity()) {
             return false;
         }
