@@ -122,32 +122,51 @@ class RegistrationServiceTest {
         assertEquals(1, course.getCurrentEnrollment());
     }
 
-    @Test
-    void shouldRejectRegistrationWhenCreditLimitIsExceeded() {
+   
+	@Test
+	void shouldRegisterWhenTotalCreditsReach24() {
+    		Student student = new Student("S101", "Anita");
 
-        Student student = new Student("S101", "Anita");
+    		student.addRegistration("CS101", 4);
+    		student.addRegistration("CS102", 4);
+    		student.addRegistration("CS201", 4);
+    		student.addRegistration("CS202", 4);
+    		student.addRegistration("CS203", 4);
 
-        // Simulate 20 existing credits
-        student.addRegistration("CS101", 4);
-        student.addRegistration("CS102", 4);
-        student.addRegistration("CS201", 4);
-        student.addRegistration("CS202", 4);
-        student.addRegistration("CS203", 4);
+    		Course course = new Course(
+           		 "CS301", "Data Structures", 4, 30, true, null);
 
-        Course course = new Course(
-                "CS301",
-                "Data Structures",
-                4,
-                30,
-                true,
-                null
-        );
+    		RegistrationService service = new RegistrationService();
 
-        RegistrationService service = new RegistrationService();
+    		boolean result = service.register(student, course);
 
-        boolean result = service.register(student, course);
+   		assertTrue(result);
+    		assertTrue(student.isRegistered("CS301"));
+    		assertEquals(24, student.getTotalCredits());
+    		assertEquals(1, course.getCurrentEnrollment());
+	}
 
-        assertFalse(result);
-        assertFalse(student.isRegistered("CS301"));
-    }
+	@Test
+	void shouldRejectRegistrationWhenCreditsExceed24() {
+   		 Student student = new Student("S102", "Rahul");
+
+    		student.addRegistration("CS101", 4);
+    		student.addRegistration("CS102", 4);
+    		student.addRegistration("CS201", 4);
+    		student.addRegistration("CS202", 4);
+    		student.addRegistration("CS203", 4);
+
+    		Course course = new Course(
+            		"CS302", "Operating Systems", 5, 30, true, null);
+
+   		 RegistrationService service = new RegistrationService();
+
+    		boolean result = service.register(student, course);
+
+   		assertFalse(result);
+    		assertFalse(student.isRegistered("CS302"));
+    		assertEquals(20, student.getTotalCredits());
+    		assertEquals(0, course.getCurrentEnrollment());
+	}
+     
 }
